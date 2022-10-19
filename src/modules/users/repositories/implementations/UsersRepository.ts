@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-
+import "reflect-metadata";
 import { IFindUserWithGamesDTO, IFindUserByFullNameDTO } from '../../dtos';
 import { User } from '../../entities/User';
 import { IUsersRepository } from '../IUsersRepository';
