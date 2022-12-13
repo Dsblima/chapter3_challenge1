@@ -1,9 +1,13 @@
 import { Router } from "express";
 
+import { GameController } from "../controllers/GameController";
+
 const gamesRouters = Router();
 
-gamesRouters.get("/", (request, response) => {
-  return response.send({ message: "consegui a rota dos games!" })
-});
+const gameController = new GameController();
+
+gamesRouters.get("/findByTitleContaining", gameController.findByTitleContaining);
+gamesRouters.get("/countAllGames", gameController.countAllGames);
+gamesRouters.get("/findUsersByGameId", gameController.findUsersByGameId);
 
 export { gamesRouters };

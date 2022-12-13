@@ -13,21 +13,39 @@ export class GamesRepository implements IGamesRepository {
   }
 
   async findByTitleContaining(param: string): Promise<Game[]> {
-    // return this.repository
-    //   .createQueryBuilder().createQueryBuilder()
-    return [];
-      // Complete usando query builder
+    const games = await this.repository
+      .createQueryBuilder("game")
+      .where(`LOWER(game.title) ILIKE LOWER('%${param}%')`)
+      .getMany();
+    return games;      
   }
 
   async countAllGames(): Promise<[{ count: string }]> {
-    // return this.repository.query(); // Complete usando raw query
-    return [{count: "23"}];
+    const gamesCount = await this.repository.query(`Select COUNT(*) FROM "games"`); // Complete usando raw query    
+    return gamesCount;
   }
 
   async findUsersByGameId(id: string): Promise<User[]> {
-    // return this.repository
-    //   .createQueryBuilder()
-    return [];
-      // Complete usando query builder
+    let users: User[] = []
+    const select = await this.repository
+      .createQueryBuilder("game")
+      .innerJoinAndSelect("users_games_games","usergames",`usergames.gamesId='${id}'`)
+      .innerJoinAndSelect("users","user","usergames.usersId = user.id")
+      .where("game.id = usergames.gamesId")
+      .getRawAndEntities()
+      
+      select.raw.forEach(queryResult => {
+        const user = new User();
+        user.id = queryResult.user_id
+        user.first_name = queryResult.user_first_name
+        user.last_name = queryResult.user_last_name
+        user.email = queryResult.user_email
+        user.created_at = queryResult.user_created_at
+        user.updated_at = queryResult.user_updated_at
+
+        users.push(user);
+      });
+
+    return users;
   }
 }
